@@ -1,0 +1,122 @@
+/* Global styles */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0; /* Remove default body margin */
+    padding: 0; /* Remove default body padding */
+    background-color: #f4f4f4; /* Match body background */
+}
+
+h1 {
+     color: #333;
+     text-align: center;
+     margin: 20px 0;
+     padding-top: 20px; /* Add some padding at the top */
+}
+
+/* Style for the tabs container */
+/* Assuming rc-tabs-content is the class used by dcc.Tabs for content area */
+#main-tabs .rc-tabs-content {
+    padding: 15px; /* Add padding inside tab content */
+}
+
+/* Style for filter labels */
+.filter-label {
+    margin-right: 5px;
+    font-style: italic;
+    color: #666;
+}
+
+/* Style for the filters container */
+.eda-filters-container {
+    padding: 15px;
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    flex-wrap: wrap;
+    background-color: #f0f0f0;
+    border-bottom: 1px solid #ccc;
+}
+
+
+/* Container for the EDA graphs - acts as a wrapper */
+.eda-graphs-container {
+    padding: 15px;
+    background-color: #fff;
+}
+
+/* Style for each row of graphs */
+.graph-row {
+    display: flex;
+    justify-content: space-evenly;
+    gap: 10px;                  /* 增加一點間距讓圖更分明 */
+    padding: 10px 20px;
+    margin-bottom: 25px;
+    flex-wrap: wrap;
+}
+
+
+
+/* Style for individual graph containers */
+.graph-container {
+    width: 47%;                 /* 比原本 48% 更大一點 */
+    max-width: 850px;           /* 放大最大寬度 */
+    height: 550px;              /* 增高保持比例 */
+    
+    display: flex;
+    flex-direction: column;
+    justify-content: center;    /* 🟢讓圖表垂直置中 */
+    align-items: center;        /* 水平置中 */
+
+    margin: auto;
+    padding: 10px;
+    box-sizing: border-box;
+    border: 1px solid #eee;
+    border-radius: 5px;
+    background-color: white;
+    overflow: hidden;
+    box-shadow: 2px 2px 10px rgba(0,0,0,0.1);
+}
+
+
+/* Style for the larger Choropleth map container */
+.choropleth-container {
+    width: calc(100% - 20px); /* Full width minus the gap */
+    height: 600px; /* Increased height (approx +30% from 600) */
+    max-width: none; /* Allow it to take full width */
+}
+
+/* Ensure graph itself fits within the container */
+.graph-container .js-plotly-plot,
+.choropleth-container .js-plotly-plot { /* Apply to both classes */
+     width: 100% !important;
+     height: 100% !important;
+}
+
+/* Style for info output */
+#info_output {
+    background-color: #e9ecef; /* Light gray background */
+    border-color: #dee2e6;
+    margin: 15px auto; /* Center the info output block */
+    padding: 15px;
+    border: 1px solid #eee;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+    max-width: 800px; /* Limit max width for readability */
+}
+ #info_output p {
+     margin-bottom: 5px; /* Space out paragraphs */
+ }
+ #info_output ul {
+     margin-top: 5px;
+     margin-bottom: 5px;
+     padding-left: 20px; /* Indent list */
+ }
+ #info_output li {
+     margin-bottom: 2px; /* Space out list items */
+ }
+
+/* Basic style for the main container if needed */
+#main-app-container {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+}
