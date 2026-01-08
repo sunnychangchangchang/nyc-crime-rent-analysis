@@ -1,73 +1,111 @@
 # NYC Rent & Crime Analysis Dashboard
 
-An end-to-end **data science project** analyzing the relationship between **housing costs and crime patterns in New York City**, combining data cleaning, feature engineering, exploratory analysis, and an interactive dashboard built with Dash.
+**Interactive Data Science Project | Python, Dash, Plotly, Pandas**
 
-This project emphasizes **analytical thinking, metric design, and insight communication**, rather than pure web development.
-
----
-
-## 🎥 Interactive Dashboard Demo
-
-![Dashboard Demo](assets/screenshots/dashboard_demo.gif)
-
-> The dashboard allows users to explore crime trends, rent distributions, and a custom-designed **Danger Ratio** metric across time, geography, and crime categories.
+This project analyzes the relationship between **housing affordability and crime patterns in New York City** from 2015 to recent data.  
+It combines exploratory data analysis, geospatial visualization, and an interactive dashboard to support data-driven urban insights.
 
 ---
 
-## 📌 Project Motivation
+## 📌 Project Overview
 
-New York City presents significant variation in both rental prices and crime intensity.  
-This project aims to answer questions such as:
+- **Objective:**  
+  Examine how crime severity relates to median rent levels across NYC neighborhoods, precincts, and ZIP codes.
 
-- How do crime levels evolve over time across different precincts?
-- Is higher rent always associated with lower crime?
-- Which areas show disproportionately high crime relative to housing cost?
-- How does this relationship change over time?
+- **Key Questions:**
+  - How do crime trends evolve over time by category?
+  - Are higher-rent areas associated with lower crime severity?
+  - Which precincts exhibit disproportionately high crime relative to rent?
+  - How does accessibility to amenities vary by ZIP code?
 
-The goal is to **transform raw public data into interpretable metrics and actionable insights**.
+- **Outcome:**  
+  A fully interactive **Dash dashboard** that allows users to explore trends across **time, geography, crime category, and area**.
+
+---
+
+## 🎥 Dashboard Demo
+
+> The GIF below demonstrates real-time interaction, filtering, and map exploration.
+
+![Dashboard Demo](screenshots/dashboard_demo.gif)
 
 ---
 
 ## 📊 Key Features
 
-- **Custom Danger Ratio Metric**  
-  \[
-  \text{Danger Ratio} = \frac{\text{Weighted Crime Count}}{\text{Median Rent}}
-  \]
-  - FELONY = 3  
-  - MISDEMEANOR = 2  
-  - VIOLATION = 1  
+### 1. Interactive EDA Dashboard
+- Dynamic filtering by:
+  - Date range
+  - Crime category (Felony / Misdemeanor / Violation)
+  - Geographic area
+- Responsive multi-panel layout with synchronized updates
 
-- **Interactive EDA Dashboard (Dash)**
-  - Crime trends over time
-  - Crime vs. rent scatter analysis
-  - Rent distribution by borough
-  - Heatmaps of danger ratio by area and month
-  - Choropleth map of latest median rent by ZIP code
+### 2. Advanced Visual Analytics
+- Time series analysis of crime and rent trends
+- Box plots for rent distribution by borough
+- Heatmaps for crime-to-rent “Danger Ratio”
+- Scatter analysis of crime vs. housing cost
+- Choropleth map of median rent by ZIP code
 
-- **Geospatial Analysis**
-  - ZIP-code-level aggregation
-  - Precinct-level comparisons
-  - Map-based exploration
-
-- **Reproducible Analysis Notebook**
-  - Data cleaning & preprocessing
-  - Feature engineering
-  - Aggregation logic validation
+### 3. Geospatial Map Explorer
+- ZIP-based search with:
+  - Nearby amenities (supermarkets, hospitals, transit, parks, etc.)
+  - Walking-time distance filtering
+- Google Maps APIs integration (Geocoding, Places, Distance Matrix)
 
 ---
 
-## 🧠 Analytical Focus (What This Project Demonstrates)
+## 🧮 Methodology
 
-- Data cleaning and normalization across heterogeneous sources
-- Metric design for combining socioeconomic and crime data
-- Time-series aggregation and comparison
-- Geospatial reasoning (ZIP, precinct, borough levels)
-- Translating analysis into **decision-friendly visualizations**
+### Danger Ratio (Core Metric)
 
-This project was designed to reflect **real-world data science workflows**, not classroom-only exercises.
+To normalize crime by cost of living, a **Danger Ratio** is defined as:
+
+\[
+\text{Danger Ratio} = \frac{\text{Weighted Crime Count}}{\text{Median Rent}}
+\]
+
+**Crime Severity Weights**
+- Felony: 3  
+- Misdemeanor: 2  
+- Violation: 1  
+
+This metric highlights areas where crime intensity is high relative to housing cost.
 
 ---
+
+## 🖼️ Selected Screenshots
+
+**EDA Dashboard (Overview)**  
+![EDA Dashboard](screenshots/eda_overview.png)
+
+**Crime vs Rent Scatter Analysis**  
+![Scatter Plot](screenshots/scatter_crime_rent.png)
+
+**Danger Ratio Heatmap**  
+![Heatmap](screenshots/danger_ratio_heatmap.png)
+
+**ZIP-Level Rent Choropleth**  
+![Choropleth](screenshots/zip_choropleth.png)
+
+---
+
+## 🛠️ Tech Stack
+
+**Languages & Libraries**
+- Python
+- Pandas, NumPy
+- Plotly, Dash
+- Dash Leaflet
+- Google Maps APIs
+
+**Visualization**
+- Interactive dashboards (Dash)
+- Geospatial mapping
+- Time series & distribution analysis
+
+---
+
 
 ## 🗂 Repository Structure
 
@@ -78,7 +116,37 @@ This project was designed to reflect **real-world data science workflows**, not 
 ├── NYC_Rent_Crime_Analysis_Report.pdf       # Full written analysis & methodology
 ├── assets/
 │   └── screenshots/
-│       ├── dashboard_demo.gif
+│       ├──dashboard_demo.gif
 │       ├── dashboard_overview.png
 │       ├── map_explorer.png
 │       └── danger_ratio_heatmap.png
+
+---
+
+## 📄 Report
+
+A full written analysis is available here:
+
+📎 **[Final Report (PDF)](assets/Sunny_Chang_Final_Report_FRE6191.pdf)**
+
+---
+
+## 🔗 Related Work
+
+This project has a complementary visualization-focused implementation using **D3.js**:
+
+- **NYC Rent & Crime Analysis (D3 / Observable)**  
+  👉 *Link to Observable notebook or GitHub repo*
+
+The two projects use the **same dataset and research question**, but differ in:
+- **This repo:** Data science workflow, analytics, dashboard engineering  
+- **Observable project:** Custom visual encoding and front-end visualization design
+
+---
+
+## 👤 Author
+
+**Sunny Chang**  
+Data Science | Analytics | Visualization  
+
+If you have feedback or would like to discuss this project, feel free to reach out.
