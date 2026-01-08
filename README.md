@@ -5,7 +5,7 @@
 This project analyzes the relationship between **housing affordability and crime patterns in New York City** from 2015 to recent data.  
 It combines exploratory data analysis, geospatial visualization, and an interactive dashboard to support data-driven urban insights.
 
----
+
 
 ## 📌 Project Overview
 
@@ -21,7 +21,7 @@ It combines exploratory data analysis, geospatial visualization, and an interact
 - **Outcome:**  
   A fully interactive **Dash dashboard** that allows users to explore trends across **time, geography, crime category, and area**.
 
----
+
 
 ## 🎥 Dashboard Demo
 
@@ -29,7 +29,7 @@ It combines exploratory data analysis, geospatial visualization, and an interact
 
 ![Dashboard Demo](screenshots/dashboard_demo.gif)
 
----
+
 
 ## 📊 Key Features
 
@@ -53,7 +53,7 @@ It combines exploratory data analysis, geospatial visualization, and an interact
   - Walking-time distance filtering
 - Google Maps APIs integration (Geocoding, Places, Distance Matrix)
 
----
+
 
 ## 🧮 Methodology
 
@@ -77,18 +77,15 @@ This metric highlights areas where crime intensity is high relative to housing c
 ## 🖼️ Selected Screenshots
 
 **EDA Dashboard (Overview)**  
-![EDA Dashboard](screenshots/eda_overview.png)
+![EDA Dashboard](screenshots/dashboard_overview.png)
 
-**Crime vs Rent Scatter Analysis**  
-![Scatter Plot](screenshots/scatter_crime_rent.png)
+**Map Explorer**  
+![Choropleth](screenshots/map_explorer.png)
 
 **Danger Ratio Heatmap**  
 ![Heatmap](screenshots/danger_ratio_heatmap.png)
 
-**ZIP-Level Rent Choropleth**  
-![Choropleth](screenshots/zip_choropleth.png)
 
----
 
 ## 🛠️ Tech Stack
 
@@ -104,7 +101,7 @@ This metric highlights areas where crime intensity is high relative to housing c
 - Geospatial mapping
 - Time series & distribution analysis
 
----
+
 
 
 ## 🗂 Repository Structure
@@ -116,12 +113,14 @@ This metric highlights areas where crime intensity is high relative to housing c
 ├── NYC_Rent_Crime_Analysis_Report.pdf       # Full written analysis & methodology
 ├── assets/
 │   └── screenshots/
-│       ├──dashboard_demo.gif
+│       ├── dashboard_demo.gif
 │       ├── dashboard_overview.png
 │       ├── map_explorer.png
 │       └── danger_ratio_heatmap.png
 
----
+
+```
+
 
 ## 📄 Report
 
@@ -129,7 +128,7 @@ A full written analysis is available here:
 
 📎 **[Final Report (PDF)](assets/Sunny_Chang_Final_Report_FRE6191.pdf)**
 
----
+
 
 ## 🔗 Related Work
 
@@ -142,7 +141,7 @@ The two projects use the **same dataset and research question**, but differ in:
 - **This repo:** Data science workflow, analytics, dashboard engineering  
 - **Observable project:** Custom visual encoding and front-end visualization design
 
----
+
 
 ## 👤 Author
 
