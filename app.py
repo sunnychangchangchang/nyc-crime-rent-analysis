@@ -10,22 +10,16 @@ from dateutil.relativedelta import relativedelta
 import json
 from dash.exceptions import PreventUpdate
 import dash_bootstrap_components as dbc
-import os # Import os module to check for assets folder
+import os 
 
 
-# Load cleaned data
 try:
-    # Use parse_dates directly in read_csv for efficiency
     merged_df = pd.read_csv("data/nyc_rent&crime_2015_to_recent.csv", parse_dates=["date"])
-    # Safely evaluate the ZIP Codes column, handling potential NaNs or non-string types before eval
-    # Also convert resulting list elements to strings to avoid potential issues later
     merged_df["ZIP Codes"] = merged_df["ZIP Codes"].apply(lambda x: [str(z) for z in eval(x)] if isinstance(x, str) else [])
-    # Ensure date column is explicitly datetime, although parse_dates should handle this
     merged_df["date"] = pd.to_datetime(merged_df["date"])
     print("Data loaded successfully.")
 except FileNotFoundError:
     print("Error: data/nyc_rent&crime_2015_to_recent.csv not found.")
-    # Create an empty DataFrame to allow the app to start, albeit without data
     merged_df = pd.DataFrame({
         "index": [], "addr_pct_cd": [], "date": [], "law_cat_cd": [], "count": [],
         "precinct_area": [], "areaName": [], "Borough": [], "areaType": [],
@@ -43,11 +37,9 @@ except Exception as e:
 
 # --- Integrated Dash Application with Charts ---
 # Total Charts/Components: 1 Map Explorer + 9 EDA Charts = 10
-#
+
 # Map Explorer:
 # 1. Map: Display area data based on ZIP Code + Search for nearby places (like supermarkets) with color-coded markers
-#
-# EDA Charts (Triggered by "Update Charts" button, Filterable by Date Range and/or Crime Category, Area Name for Chart 8):
 # 2. Crime vs Rent Scatter Plot (Crime Count) - Filterable by Date Range & Category
 # 3. Bar Plot by Precinct (Crime Count) - Filterable by Date Range & Category
 # 4. Crime Count over Time (Monthly Trend by Category) - Filterable by Date Range & Category
@@ -59,9 +51,6 @@ except Exception as e:
 # 10. Choropleth: Latest Median Rent by ZIP Code - Filterable by Date Range (uses data across all categories)
 
 # Initialize Dash app - Dash automatically looks for assets folder
-# Dash reads CSS files from the 'assets' folder automatically when the app is initialized.
-# You don't need to explicitly import or load them in the Python code.
-# Just place your style.css file inside the 'assets' folder.
 app = dash.Dash(__name__)
 app.title = "NYC Rent & Crime Dashboard"
 server = app.server # Expose server for production deployment
@@ -72,7 +61,9 @@ server = app.server # Expose server for production deployment
 # 2. Places API
 # 3. Distance Matrix API
 # Check your Google Cloud Console for API restrictions and billing setup.
-GOOGLE_API_KEY = "AIzaSyAYGK5ln7RhqgcViyZqEUcLoIXLLeFeFtM"
+
+GOOGLE_API_KEY = "YOUR_API_KEY"
+
 
 # Define colors for different place types
 PLACE_COLORS = {
@@ -84,12 +75,11 @@ PLACE_COLORS = {
     "library": "brown"
 }
 
-# Determine min and max dates for the date picker (handle empty dataframe case)
+# Determine min and max dates for the date picker
 if not merged_df.empty:
     min_date_available = merged_df["date"].min().date()
     max_date_available = merged_df["date"].max().date()
-    # Get unique area names for the dropdown
-    area_names = sorted(merged_df['areaName'].unique()) # Sort for professional look
+    area_names = sorted(merged_df['areaName'].unique()) 
     area_dropdown_options = [{'label': 'Overall NYC', 'value': 'Overall'}] + [{'label': area, 'value': area} for area in area_names if pd.notnull(area)]
 else:
     # Default dates if data loading fails or df is empty
@@ -100,11 +90,11 @@ else:
 
 # === Layout ===
 app.layout = html.Div([
-    # html.H1("📍 NYC Rent & Crime Explorer", style={"textAlign": "center", "color": "#333", "margin-bottom": "20px"}), # Removed padding-top as it's in CSS
+    # html.H1("📍 NYC Rent & Crime Explorer", style={"textAlign": "center", "color": "#333", "margin-bottom": "20px"}), 
     # Container for Title and Author to align them vertically
         html.Div([
-            html.H1("📍 NYC Rent & Crime Explorer", style={"textAlign": "center", "color": "#333", "margin-bottom": "0"}), # Remove bottom margin from H1
-            html.P("Made by Sunny", style={"textAlign": "center", "color": "#555", "font-size": "0.9em", "margin-top": "5px"}) # Add author info
+            html.H1("📍 NYC Rent & Crime Explorer", style={"textAlign": "center", "color": "#333", "margin-bottom": "0"}), 
+            html.P("Made by Sunny Chang", style={"textAlign": "center", "color": "#555", "font-size": "0.9em", "margin-top": "5px"})
         ], style={"display": "flex", "flex-direction": "column", "align-items": "center", "justify-content": "center"}),
         html.Div([
             html.A(
@@ -122,7 +112,7 @@ app.layout = html.Div([
                 }
             )
         ], style={"marginBottom": "30px"}),
-    dcc.Tabs(id="main-tabs", value="tab-map", children=[
+    dcc.Tabs(id="main-tabs", value="tab-eda", children=[
         dcc.Tab(label="📌 Map Explorer", value="tab-map", children=[
             html.Div([
                 dcc.Input(id="zip_input", type="text", placeholder="Enter ZIP...", debounce=True,
@@ -148,7 +138,7 @@ app.layout = html.Div([
             ], style={"textAlign": "center", "margin": "15px 0"}),
 
 
-            html.Div(id="info_output"), # Removed inline style, moved to CSS
+            html.Div(id="info_output"), 
             dl.Map(id="map", center=[40.73, -73.94], zoom=12, children=[
                 dl.TileLayer(),
                 dl.LayerGroup(id="marker_layer")
@@ -177,14 +167,14 @@ app.layout = html.Div([
                     ),
                 ], style={"display": "flex", "align-items": "center"}),
 
-                # Add Area Name Dropdown for Rent Trend Chart (Chart 7)
-                 html.Div([ # Container for Area Name Dropdown
+                # Add Area Name Dropdown 
+                 html.Div([ 
                     html.Label("Select Area:", style={"margin-right": "10px", "font-weight": "bold"}),
                     dcc.Dropdown(id="area_dropdown",
                                  options=area_dropdown_options,
                                  value='Overall', # Default value
                                  clearable=False,
-                                 style={"width": "250px"}), # Adjust width as needed
+                                 style={"width": "250px"}), 
                 ], style={"display": "flex", "align-items": "center"}),
 
 
@@ -192,33 +182,66 @@ app.layout = html.Div([
                 html.Button("Update Charts", id="update_eda_button", n_clicks=0,
                             style={"padding": "10px 20px", "background-color": "#28a745", "color": "white", "border": "none", "border-radius": "5px", "cursor": "pointer", "flex-shrink": 0, "margin-left": "20px"})
 
-            ], className="eda-filters-container"), # Use a class for the filters container
+            ], className="eda-filters-container"), 
 
-             # Add labels for the filters
+            # Add labels for the filters
             html.Div([
-                html.Span("Chart Filters:", style={"font-weight": "bold", "margin-right": "10px"}),
-                html.Span("Date Range applies to ALL charts.", className="filter-label", style={"color": "#007bff"}), # Highlight date range
-                html.Span("|  Crime Category applies to: ", style={"margin-left": "15px", "font-weight": "bold"}),
-                html.Span("Crime/Rent Scatter (Chart 3),", className="filter-label"), # Updated description for Chart 3 (Crime Count vs Rent)
-                html.Span("Bar by Precinct (Chart 2),", className="filter-label"),
-                html.Span("Monthly Trend of Crime Count (Chart 1).", className="filter-label"),
-                html.Span("|  Area selection applies to:", style={"margin-left": "15px", "font-weight": "bold"}),
-                html.Span(" Rent Trend (Chart 7), Dager Ratio Trend (Chart 8).", className="filter-label", style={"color": "#ff232"}), # Highlight Area filter
+                html.Span("Filter Scope:", style={"fontWeight": "bold", "marginRight": "10px"}),
+
+                html.Span(
+                    "Date Range applies to all charts.",
+                    style={"color": "#007bff", "marginRight": "15px"}
+                ),
+
+                html.Span(
+                    "Crime Category applies to crime-related charts only.",
+                    style={"marginRight": "15px"}
+                ),
+
+                html.Span(
+                    "Area selection applies to trend analyses.",
+                    style={"color": "#28a745"}
+                ),
+            ], style={
+                "textAlign": "center",
+                "marginTop": "10px",
+                "fontSize": "0.9em",
+                "color": "#555"
+            }),
 
 
-            ], style={"textAlign": "center", "margin-top": "10px", "font-size": "0.9em", "color": "#555"}),
-
-            # === Danger Ratio Calculation Description for Layout ===
+            # Danger Ratio Explanation
             html.Div([
-                 html.Span("ℹ️ ", style={'fontWeight': 'bold', 'color': '#007bff'}), # Info icon
-                 html.Span("Danger Ratio Explanation: ", style={'fontWeight': 'bold'}),
-                 html.Span("This metric quantifies crime severity relative to the cost of living. It is computed as the "),
-                 html.Span("(Weighted Crime Count) / (Median Rent)", style={'fontWeight': 'bold', 'fontStyle': 'italic'}),
-                 html.Span(". Weighted Crime Count is calculated by assigning severity weights to crime types: FELONYs are weighted by 3, MISDEMEANORs by 2, and VIOLATIONs by 1. A higher Danger Ratio indicates an area where crime is relatively higher compared to the median rental price, suggesting a potentially lower safety index per dollar spent on housing."),
-             ], style={'textAlign': 'center', 'marginTop': '15px', 'marginBottom': '15px', 'fontSize': '0.95em', 'color': '#555', 'padding': '10px', 'backgroundColor': '#e9ecef', 'borderRadius': '5px'}),
+                html.Span("ℹ️ ", style={"fontWeight": "bold", "color": "#007bff"}),
+                html.Span("Danger Ratio: ", style={"fontWeight": "bold"}),
+                html.Span(
+                    "A composite metric that measures crime severity relative to housing cost. "
+                    "It is defined as "
+                ),
+                html.Span(
+                    "(Weighted Crime Count ÷ Median Rent)",
+                    style={"fontWeight": "bold", "fontStyle": "italic"}
+                ),
+                html.Span(
+                    ". Crime severity is weighted by offense type (Felony = 3, Misdemeanor = 2, Violation = 1). "
+                    "Higher values indicate areas where crime intensity is high relative to rental prices, "
+                    "suggesting lower safety per dollar spent on housing."
+                ),
+            ], style={
+                "textAlign": "center",
+                "marginTop": "15px",
+                "marginBottom": "15px",
+                "fontSize": "0.95em",
+                "color": "#555",
+                "padding": "12px",
+                "backgroundColor": "#e9ecef",
+                "borderRadius": "6px",
+                "maxWidth": "1100px",
+                "marginLeft": "auto",
+                "marginRight": "auto"
+            }),
 
-             # Basic style for filter labels
-            html.Br(), # Add a line break for spacing
+            html.Br(),
 
 
             # Container for the graphs with the desired 2x4 + 1 layout
@@ -252,11 +275,11 @@ app.layout = html.Div([
                 ]),
                 # Row 4: Chart 7 and Chart 8
                 html.Div(className="graph-row", children=[
-                    # --- Chart 7 (MODIFIED): Median Rent Trend (Overall or by Area) ---
+                    # Chart 7: Median Rent Trend (Overall or by Area) 
                      html.Div(className="graph-container", children=[
                          dcc.Graph(id="rent_danger_scatter", figure={}) # Chart 7: Median Rent Trend (Overall or by Area) - MODIFIED
                      ]),
-                    # --- Chart 8 (ORIGINAL): Average Danger Ratio Trend (Overall or by Area) ---
+                    # Chart 8: Average Danger Ratio Trend (Overall or by Area)
                     html.Div(className="graph-container", children=[
                          dcc.Graph(id="overall_danger_trend", figure={}) # Chart 8: Average Danger Ratio Trend (Overall or by Area) - KEPT ORIGINAL
                      ]),
@@ -268,15 +291,15 @@ app.layout = html.Div([
                      ]),
                 ]),
 
-            ], className="eda-graphs-container"), # Main wrapper container
+            ], className="eda-graphs-container"),
 
 
         ])
     ], style={"margin": "0 10px"}),
 
-], id="main-app-container") # Give the main div an ID if needed for CSS targeting
+], id="main-app-container") 
 
-# === Modified Index String (Removed inline CSS) ===
+
 app.index_string = '''
 <!DOCTYPE html>
 <html>
@@ -358,7 +381,6 @@ def update_map(n, zip_code, time_limit, types, current_center, current_zoom):
          return [], html.P(err_msg), current_center, current_zoom
 
     # --- 2. Search for nearby places ---
-    # Initialize dictionary to store counts for each place type
     places_count_by_type = {ptype: 0 for ptype in types} if types else {}
     place_markers = []
 
@@ -471,7 +493,6 @@ def update_map(n, zip_code, time_limit, types, current_center, current_zoom):
 
     if df_zip.empty:
         summary_elements.append(html.P("No crime or rent data available for this ZIP Code in the dataset."))
-        # If no data for ZIP, still show place counts if search was done
         if types:
             places_summary_list = [
                 html.Li(f"{ptype.replace('_', ' ').title()}: {count}")
@@ -484,17 +505,9 @@ def update_map(n, zip_code, time_limit, types, current_center, current_zoom):
                  summary_elements.append(html.P(f"🚶 No places found for selected types within {time_limit} min walk."))
 
     else:
-        # Find the latest date *in the filtered data for this specific ZIP*
         latest_date_in_zip = df_zip["date"].max()
-        # Determine the start of the month for the latest date
         latest_month_start = latest_date_in_zip.replace(day=1)
-
-        # Filter data for the latest month *within this ZIP's data*
-        # This df contains all records (potentially multiple crime types) for the latest month
         df_latest_month = df_zip[df_zip["date"] >= latest_month_start].copy()
-
-        # Get the *first* record corresponding to the absolute latest date for this ZIP
-        # This is mainly for precinct_area, as rent/danger might vary slightly even on the same date if data source changes
         latest_overall_data_point = df_zip.sort_values(by="date", ascending=False).iloc[0]
 
         summary_elements.extend([
@@ -504,7 +517,6 @@ def update_map(n, zip_code, time_limit, types, current_center, current_zoom):
 
         # --- Calculate Average Rent for Latest Month ---
         if not df_latest_month.empty and 'median_rent' in df_latest_month.columns and df_latest_month['median_rent'].notna().any():
-            # Calculate the mean of 'median_rent' for all entries in the latest month
             avg_rent_latest_month = df_latest_month['median_rent'].mean()
             summary_elements.append(html.P(f"💰 Average Rent (Month: {latest_month_start.strftime('%Y-%m')}): ${avg_rent_latest_month:,.0f}"))
         else:
@@ -512,7 +524,6 @@ def update_map(n, zip_code, time_limit, types, current_center, current_zoom):
 
         # --- Calculate and display crime counts for the latest month ---
         if not df_latest_month.empty:
-            # Sum counts for each category within the latest month (Correctly implemented)
             crime_counts_latest_month = df_latest_month.groupby("law_cat_cd")["count"].sum().to_dict()
             summary_elements.append(html.P(f"🚨 Total Crime Counts (Month: {latest_month_start.strftime('%Y-%m')}):")) # Confirmed: This is for the latest month with data for this ZIP
             summary_elements.append(html.Ul([
@@ -521,12 +532,10 @@ def update_map(n, zip_code, time_limit, types, current_center, current_zoom):
                 html.Li(f"VIOLATION: {crime_counts_latest_month.get('VIOLATION', 0):,}"),
             ]))
         else:
-             # This case might be rare if df_zip wasn't empty, but good to handle
              summary_elements.append(html.P(f"🚨 No crime data found for the latest month ({latest_month_start.strftime('%Y-%m')}) in this ZIP."))
 
         # --- Calculate Average Danger Ratio for Latest Month ---
         if not df_latest_month.empty and 'danger_ratio' in df_latest_month.columns and df_latest_month['danger_ratio'].notna().any():
-             # Calculate the mean of 'danger_ratio' for all entries in the latest month
             avg_danger_latest_month = df_latest_month['danger_ratio'].mean()
             summary_elements.append(html.P(f"💥 Average Danger Ratio (Month: {latest_month_start.strftime('%Y-%m')}): {avg_danger_latest_month:.4f}"))
         else:
@@ -535,14 +544,13 @@ def update_map(n, zip_code, time_limit, types, current_center, current_zoom):
         # --- Add nearby places count (by type) ---
         if types:
             places_summary_list = [
-                # Format each type and its count
                 html.Li(f"{ptype.replace('_', ' ').title()}: {count}")
-                for ptype, count in places_count_by_type.items() if count > 0 # Optionally only show types with count > 0
+                for ptype, count in places_count_by_type.items() if count > 0 
             ]
-            if places_summary_list: # Only add the section if any places were found
+            if places_summary_list: 
                  summary_elements.append(html.P(f"🚶 Places Found Nearby (≤ {time_limit} min walk):"))
                  summary_elements.append(html.Ul(places_summary_list))
-            else: # Handle case where types were selected but none found in time limit
+            else: 
                  summary_elements.append(html.P(f"🚶 No places found for selected types within {time_limit} min walk."))
         else:
              summary_elements.append(html.P("🚶 No place types selected for nearby search."))
@@ -555,347 +563,447 @@ def update_map(n, zip_code, time_limit, types, current_center, current_zoom):
 
     # Determine final map center and zoom
     map_center = [lat, lon] if lat is not None else current_center
-    # Increase zoom level slightly for better focus on the ZIP code area
-    map_zoom = 12 if lat is not None else current_zoom # Zoom increased to 13
+    map_zoom = 12 if lat is not None else current_zoom 
 
     # --- 5. Return results ---
-    # Use class "info-box" for potential CSS styling
     return markers, html.Div(summary_elements, className="info-box"), map_center, map_zoom
 
 
 @app.callback(
-    Output("monthly_trend_line", "figure"), # Order changed to match output definition
+    Output("monthly_trend_line", "figure"), 
     Output("crime_area_bar", "figure"),
     Output("crime_rent_scatter", "figure"),
     Output("boxplot_rent_borough", "figure"),
     Output("heatmap_crime_rent", "figure"),
-    Output("danger_ratio_area_bar", "figure"), # Chart 6 output
-    Output("rent_danger_scatter", "figure"),  # Chart 7 output (Now Rent Trend)
-    Output("overall_danger_trend", "figure"), # Chart 8 output (Danger Ratio Trend)
-    Output("choropleth_rent", "figure"), # Chart 9 output
-    # Input is now the button click
+    Output("danger_ratio_area_bar", "figure"), 
+    Output("rent_danger_scatter", "figure"),  
+    Output("overall_danger_trend", "figure"), 
+    Output("choropleth_rent", "figure"), 
     Input("update_eda_button", "n_clicks"),
-    # States are the filter values
     State("crime_dropdown", "value"),
     State("date_range_picker", "start_date"),
     State("date_range_picker", "end_date"),
-    State("area_dropdown", "value") # State for Area Name dropdown (used by Chart 7 and 8)
+    State("area_dropdown", "value") 
 )
-# Callback to update EDA charts based on button click and State filter values
-# Now returns 9 figures
+
 def update_eda(n_clicks, category, start_date, end_date, area_name_selected):
-    # Prevent update on initial page load (button not clicked)
     if n_clicks is None or n_clicks == 0:
         raise PreventUpdate
 
-    # Handle case where data might not be loaded
     if merged_df.empty:
         print("Error: merged_df is empty, cannot update EDA charts.")
-        # Return empty plots with informative titles if data is not available (9 empty plots)
         empty_plot_title = "No data available"
-        # Ensure 9 empty figures are returned to match the 9 outputs
         return [px.scatter(title=empty_plot_title)] * 9
 
-
-    # Convert date strings from DatePickerRange to datetime objects
-    # Use available min/max dates as fallback if picker values are None initially (shouldn't happen with default values)
     start_date_obj = datetime.strptime(start_date, '%Y-%m-%d') if start_date else merged_df["date"].min()
     end_date_obj = datetime.strptime(end_date, '%Y-%m-%d') if end_date else merged_df["date"].max()
 
     print(f"\n--- Updating EDA Charts ---")
     print(f"Filtering data for date range: {start_date_obj.strftime('%Y-%m-%d')} to {end_date_obj.strftime('%Y-%m-%d')}")
     print(f"Selected Crime Category: {category}")
-    print(f"Selected Area for Trends: {area_name_selected}") # Updated print message
+    print(f"Selected Area for Trends: {area_name_selected}") 
 
 
-    # Filter the entire dataset by the selected date range
     filtered_df_date_range = merged_df[
         (merged_df["date"] >= start_date_obj) & (merged_df["date"] <= end_date_obj)
     ].copy()
-
     print(f"Shape after date filtering: {filtered_df_date_range.shape}")
 
 
-    # Filter data ONLY for the selected crime category and date range (used for crime-count specific charts)
-    # Ensure filtered_df_date_range is not empty before filtering by category
     if not filtered_df_date_range.empty:
         df_category_date_range = filtered_df_date_range[
             filtered_df_date_range["law_cat_cd"] == category
         ].copy()
     else:
-        df_category_date_range = pd.DataFrame() # Create empty dataframe if date filtered is empty
-
+        df_category_date_range = pd.DataFrame() 
     print(f"Shape after date and category ('{category}') filtering: {df_category_date_range.shape}")
 
 
     # --- Generate Charts (9 charts total) ---
 
-    # Chart 1: Monthly Crime Trend by Category (Line) - Filtered by Date & Category
-    # Ensure monthly_trend_df is not empty before plotting
+    # Chart 1: Monthly Crime Trend (Line) — Filtered by Date & Category
     if not df_category_date_range.empty:
-        monthly_trend_df = df_category_date_range.groupby(pd.Grouper(key='date', freq='M'))["count"].sum().reset_index()
-        print(f"Shape of monthly_trend_df: {monthly_trend_df.shape}")
-        if not monthly_trend_df.empty: # Check if grouped data is also not empty
-            line_crime_trend = px.line(monthly_trend_df, x="date", y="count", title=f"📈 {category} Crime Count Monthly Trend ({start_date} to {end_date})",
-                           labels={"date": "Date", "count": "Crime Count"},
-                           template="plotly_white"
-                           ).update_layout(margin={"t":40})
+        monthly_trend_df = (
+            df_category_date_range
+            .groupby(pd.Grouper(key="date", freq="ME"))["count"]
+            .sum()
+            .reset_index()
+            .sort_values("date")
+        )
+
+        if not monthly_trend_df.empty:
+            line_crime_trend = px.line(
+                monthly_trend_df,
+                x="date",
+                y="count",
+                title=f"{category} Crime Incidents — Monthly Trend ({start_date} to {end_date})",
+                labels={"date": "Date", "count": "Crime Incidents"},
+                template="plotly_white"
+            )
+            line_crime_trend.update_traces(
+                line=dict(width=2),
+                hovertemplate="Month: %{x|%b %Y}<br>Incidents: %{y:,}<extra></extra>"
+            )
+            line_crime_trend.update_layout(
+                width=700,
+                height=400,
+                margin=dict(l=100, r=60, t=60, b=50)
+            )
         else:
-            print("Grouped monthly_trend_df is empty for Chart 1, returning empty plot.")
-            line_crime_trend = px.scatter(title=f"📈 No {category} Crime Trend data ({start_date} to {end_date})", template="plotly_white")
+            line_crime_trend = px.scatter(
+                title=f"No {category} crime trend data ({start_date} to {end_date})",
+                template="plotly_white"
+            )
     else:
-         print("df_category_date_range is empty for Chart 1, returning empty plot.")
-         line_crime_trend = px.scatter(title=f"📈 No {category} Crime Trend data ({start_date} to {end_date})", template="plotly_white")
+        line_crime_trend = px.scatter(
+            title=f"No {category} crime trend data ({start_date} to {end_date})",
+            template="plotly_white"
+        )
 
 
-    # Chart 2: Bar Plot by Precinct (Crime Count) - Filtered by Date & Category
-    # Ensure bar_df is not empty before plotting
+
+    # Chart 2: Crime Count by Precinct Area (Bar) — Filtered by Date & Category
     if not df_category_date_range.empty:
-        bar_crime_area_df = df_category_date_range.groupby("precinct_area")["count"].sum().reset_index().sort_values("count", ascending=False)
-        print(f"Shape of bar_crime_area_df: {bar_crime_area_df.shape}")
-        if not bar_crime_area_df.empty: # Check if grouped data is also not empty
-             bar_crime_area = px.bar(bar_crime_area_df, x="precinct_area", y="count", title=f"🔍 {category} Crime Count by Precinct Area ({start_date} to {end_date})",
-                         labels={"precinct_area": "Precinct Area", "count": "Crime Count"},
-                         template="plotly_white"
-                         )
-             # Rotate x-axis labels
-             bar_crime_area.update_layout(
-                 margin={"t":40},
-                 xaxis={"tickangle": 45, "automargin": True} # Rotate x-axis labels
-             )
+        bar_crime_area_df = (
+            df_category_date_range
+            .groupby("precinct_area", as_index=False)["count"]
+            .sum()
+            .sort_values("count", ascending=False)
+            .head(15)  # Top 15 for readability
+        )
+
+        if not bar_crime_area_df.empty:
+            bar_crime_area = px.bar(
+                bar_crime_area_df,
+                x="count",
+                y="precinct_area",
+                orientation="h",
+                title=f"Top 15 {category} Crime by Precinct ({start_date} to {end_date})",
+                labels={"precinct_area": "Precinct Area", "count": "Crime Incidents"},
+                template="plotly_white"
+            )
+            bar_crime_area.update_traces(
+                hovertemplate="Area: %{y}<br>Incidents: %{x:,}<extra></extra>"
+            )
+            bar_crime_area.update_layout(
+                width=700,
+                height=400,
+                margin=dict(l=180, r=40, t=60, b=50),
+                yaxis=dict(categoryorder="total ascending")
+            )
         else:
-             print("Grouped bar_crime_area_df is empty for Chart 2, returning empty plot.")
-             bar_crime_area = px.scatter(title=f"🔍 No {category} Crime Count data by Area ({start_date} to {end_date})", template="plotly_white")
+            bar_crime_area = px.scatter(
+                title=f"No {category} crime count data by area ({start_date} to {end_date})",
+                template="plotly_white"
+            )
     else:
-         print("df_category_date_range is empty for Chart 2, returning empty plot.")
-         bar_crime_area = px.scatter(title=f"🔍 No {category} Crime Count data by Area ({start_date} to {end_date})", template="plotly_white")
+        bar_crime_area = px.scatter(
+            title=f"No {category} crime count data by area ({start_date} to {end_date})",
+            template="plotly_white"
+        )
+   
 
-
-    # Chart 3: Crime vs Rent Scatter Plot (Crime Count) - Filtered by Date & Category
+    # Chart 3: Scatter — Crime Count vs Median Rent (Filtered by Date & Category)
     if not df_category_date_range.empty:
-        print(f"Shape of scatter_crime_rent source: {df_category_date_range.shape}")
-        scatter_crime_rent = px.scatter(df_category_date_range, x="median_rent", y="count", color="Borough",
-                         title=f"💥 {category} Crime Count vs Median Rent by Borough ({start_date} to {end_date})",
-                         hover_data={"precinct_area": True, "date": True, "count": True, "median_rent": ":,.0f", "Borough": True},
-                         labels={"median_rent": "Median Rent ($)", "count": "Crime Count"},
-                         template="plotly_white"
-                         ).update_layout(margin={"t":40})
+        scatter_crime_rent = px.scatter(
+            df_category_date_range,
+            x="median_rent",
+            y="count",
+            color="Borough",
+            title=f"{category} Crime vs. Median Rent by Borough ({start_date} to {end_date})",
+            labels={"median_rent": "Median Rent (USD)", "count": "Crime Incidents"},
+            template="plotly_white",
+            hover_name="precinct_area"
+        )
+
+        scatter_crime_rent.update_traces(
+            marker=dict(size=5, opacity=0.6, line=dict(width=0)),
+            hovertemplate=(
+                "Area: %{hovertext}<br>"
+                "Borough: %{marker.color}<br>"
+                "Date: %{customdata[0]|%Y-%m-%d}<br>"
+                "Median Rent: $%{x:,.0f}<br>"
+                "Crime Incidents: %{y:,}<extra></extra>"
+            ),
+            customdata=df_category_date_range[["date"]].to_numpy()
+        )
+
+        scatter_crime_rent.update_layout(
+            width=700,
+            height=400,
+            margin=dict(l=100, r=160, t=60, b=50),
+            legend_title_text="Borough"
+        )
+        scatter_crime_rent.update_xaxes(tickprefix="$")
     else:
-         print("df_category_date_range is empty for Chart 3, returning empty plot.")
-         scatter_crime_rent = px.scatter(title=f"💥 No {category} Crime vs Rent data ({start_date} to {end_date})", template="plotly_white")
+        scatter_crime_rent = px.scatter(
+            title=f"No {category} crime vs rent data ({start_date} to {end_date})",
+            template="plotly_white"
+        )
 
 
-    # Chart 4: Box Plot: Rent Distribution by Borough - Filtered by Date Range (uses data across all categories in date range)
+  
+    # Chart 4: Box Plot — Rent Distribution by Borough (Date Range)
     if not filtered_df_date_range.empty:
-        print(f"Shape of box_rent source: {filtered_df_date_range.shape}")
-        box_rent = px.box(filtered_df_date_range, x="Borough", y="median_rent", title=f"🧊 Rent Distribution by Borough ({start_date} to {end_date})",
-                 labels={"Borough": "Borough", "median_rent": "Median Rent ($)"},
-                 template="plotly_white"
-                 ).update_layout(margin={"t":40})
-    else:
-         print("filtered_df_date_range is empty for Chart 4, returning empty plot.")
-         box_rent = px.scatter(title=f"🧊 No Rent Distribution data ({start_date} to {end_date})", template="plotly_white")
+        box_rent = px.box(
+            filtered_df_date_range,
+            x="Borough",
+            y="median_rent",
+            title=f"Rent Distribution by Borough ({start_date} to {end_date})",
+            labels={
+                "Borough": "Borough",
+                "median_rent": "Median Rent (USD)"
+            },
+            template="plotly_white"
+        )
 
+        box_rent.update_traces(
+            hovertemplate="Borough: %{x}<br>Median Rent: $%{y:,.0f}<extra></extra>"
+        )
 
-    # Chart 5: Heatmap: Average Crime-to-Rent Danger Index by Area and Month - Filtered by Date Range (uses data across all categories)
-    if not filtered_df_date_range.empty:
-        filtered_df_date_range_heatmap = filtered_df_date_range.copy()
-        filtered_df_date_range_heatmap['month_year'] = filtered_df_date_range_heatmap['date'].dt.strftime('%Y-%m')
-        # Ensure there's data after grouping before creating heatmap_df_agg
-        if not filtered_df_date_range_heatmap.empty: # Check if the dataframe for heatmap is not empty
-            heatmap_df_agg = filtered_df_date_range_heatmap.groupby(["precinct_area", "month_year"])["danger_ratio"].mean().reset_index()
-            print(f"Shape of heatmap_df_agg: {heatmap_df_agg.shape}")
-            if not heatmap_df_agg.empty: # Check if grouped data is also not empty
-                 heatmap_df_agg['month_year'] = pd.to_datetime(heatmap_df_agg['month_year']).dt.strftime('%Y-%m') # Ensure format for plotting
-                 heatmap_df_agg = heatmap_df_agg.sort_values(by=['month_year', 'precinct_area'])
-
-                 heat_danger = px.density_heatmap(heatmap_df_agg, x="precinct_area", y="month_year", z="danger_ratio",
-                                        title=f"🔥 Average Crime-to-Rent Danger Index by Area and Month ({start_date} to {end_date})",
-                                        labels={"precinct_area": "Precinct Area", "month_year": "Month-Year", "danger_ratio": "Average Danger Ratio"},
-                                        color_continuous_scale="Reds",
-                                        template="plotly_white"
-                                        )
-                 # Rotate x-axis labels
-                 heat_danger.update_layout(
-                     margin={"t":40},
-                     xaxis={"tickangle": 45, "automargin": True} # Rotate x-axis labels
-                 )
-
-                 if len(heatmap_df_agg["month_year"].unique()) > 12:
-                      heat_danger.update_layout(yaxis={"dtick": "M6", "automargin": True})
-                 else:
-                      heat_danger.update_layout(yaxis={"dtick": "M1", "automargin": True})
-            else:
-                 print("Aggregated heatmap_df_agg is empty for Chart 5, returning empty plot.")
-                 heat_danger = px.scatter(title=f"🔥 No aggregated data for Heatmap ({start_date} to {end_date})", template="plotly_white")
-        else:
-             print("filtered_df_date_range_heatmap is empty for Chart 5, returning empty plot.")
-             heat_danger = px.scatter(title=f"🔥 No filtered data for Heatmap ({start_date} to {end_date})", template="plotly_white")
-    else:
-        print("filtered_df_date_range is empty for Chart 5, returning empty plot.")
-        heat_danger = px.scatter(title=f"🔥 No data for Heatmap ({start_date} to {end_date})", template="plotly_white")
-
-
-    # Chart 6 (NEW): Bar Plot: Average Danger Ratio by Precinct Area - Filtered by Date Range (uses data across all categories)
-    # Ensure filtered_df_date_range is not empty before plotting
-    if not filtered_df_date_range.empty:
-        bar_danger_area_df = filtered_df_date_range.groupby("precinct_area")["danger_ratio"].mean().reset_index().sort_values("danger_ratio", ascending=False)
-        print(f"Shape of bar_danger_area_df: {bar_danger_area_df.shape}")
-        if not bar_danger_area_df.empty: # Check if grouped data is also not empty
-             bar_danger_area = px.bar(bar_danger_area_df, x="precinct_area", y="danger_ratio", title=f"📊 Average Danger Ratio by Precinct Area ({start_date} to {end_date})",
-                           labels={"precinct_area": "Precinct Area", "danger_ratio": "Average Danger Ratio"},
-                           template="plotly_white"
-                           )
-             # Rotate x-axis labels
-             bar_danger_area.update_layout(
-                 margin={"t":40},
-                 xaxis={"tickangle": 45, "automargin": True} # Rotate x-axis labels
-             )
-        else:
-            print("Grouped bar_danger_area_df is empty for Chart 6, returning empty plot.")
-            bar_danger_area = px.scatter(title=f"📊 No Danger Ratio data by Area ({start_date} to {end_date})", template="plotly_white")
-    else:
-         print("filtered_df_date_range is empty for Chart 6, returning empty plot.")
-         bar_danger_area = px.scatter(title=f"📊 No Danger Ratio data by Area ({start_date} to {end_date})", template="plotly_white")
-
-
-    # --- Chart 7 (MODIFIED): Line Plot: Median Rent Trend (Overall or by Area) ---
-    # This chart now shows the Median Rent trend over time, filtered by the selected Area.
-    # It replaces the original "Average Rent vs. Average Danger Ratio" scatter plot.
-    if not filtered_df_date_range.empty:
-        if area_name_selected == 'Overall' or area_name_selected is None:
-            # Calculate overall median rent trend
-            # Group by month and calculate the median of 'median_rent'
-            rent_trend_df_chart7 = filtered_df_date_range.groupby(pd.Grouper(key='date', freq='M'))["median_rent"].median().reset_index()
-            chart7_title = f"💰 Overall Median Rent Trend ({start_date} to {end_date})" # Dynamic Title
-            print(f"Chart 7: Calculating overall median rent trend. Shape: {rent_trend_df_chart7.shape}")
-        else:
-            # Filter by area and calculate median rent trend
-            df_area_filtered_chart7 = filtered_df_date_range[filtered_df_date_range['areaName'] == area_name_selected].copy() # Use copy to avoid SettingWithCopyWarning
-            print(f"Chart 7: Filtering rent trend by area '{area_name_selected}'. Shape: {df_area_filtered_chart7.shape}")
-            if not df_area_filtered_chart7.empty:
-                 # Group by month and calculate the median of 'median_rent' for the selected area
-                 rent_trend_df_chart7 = df_area_filtered_chart7.groupby(pd.Grouper(key='date', freq='M'))["median_rent"].median().reset_index()
-                 chart7_title = f"💰 Median Rent Trend for {area_name_selected} ({start_date} to {end_date})" # Dynamic Title
-                 print(f"Chart 7: Grouped rent trend for '{area_name_selected}'. Shape: {rent_trend_df_chart7.shape}")
-            else:
-                 rent_trend_df_chart7 = pd.DataFrame() # Empty if no data for the area
-                 chart7_title = f"💰 No Median Rent Trend data for {area_name_selected} ({start_date} to {end_date})" # Dynamic Title
-                 print(f"Chart 7: No data after filtering for area '{area_name_selected}'.")
-
-
-        if not rent_trend_df_chart7.empty: # Check if grouped data is also not empty
-            # Use px.line for time series plot
-            rent_trend_figure = px.line(rent_trend_df_chart7, x="date", y="median_rent", title=chart7_title, # Use dynamic title
-                                 labels={"date": "Date", "median_rent": "Median Rent ($)"}, # Updated y-axis label
-                                 template="plotly_white"
-                                 ).update_layout(margin={"t":40})
-        else:
-            print("Chart 7: rent_trend_df_chart7 is empty, returning empty plot.")
-            rent_trend_figure = px.scatter(title=chart7_title, template="plotly_white") # Use dynamic title
+        box_rent.update_layout(
+            width=700,
+            height=400,
+            margin=dict(l=100, r=40, t=60, b=50)
+        )
+        box_rent.update_yaxes(tickprefix="$")
 
     else:
-         print("Chart 7: filtered_df_date_range is empty for rent trend source, returning empty plot.")
-         rent_trend_figure = px.scatter(title=f"💰 No data for Median Rent Trend ({start_date} to {end_date})", template="plotly_white") # Fallback static title
-
-    # --- End of Chart 7 (MODIFIED) ---
-
-
-    # --- Chart 8 (ORIGINAL): Line Plot: Average Danger Ratio Trend (Overall or by Area) ---
-    # This chart remains the Average Danger Ratio Trend over time, filtered by the selected Area.
-    # It was previously Chart 9 in my *incorrect* modification, now corrected back to Chart 8.
+        box_rent = px.scatter(
+            title=f"No Rent Distribution data ({start_date} to {end_date})",
+            template="plotly_white"
+        )
+   
+    # Chart 5: Heatmap — Avg Danger Ratio by Precinct Area and Month (Date Range)
     if not filtered_df_date_range.empty:
-        if area_name_selected == 'Overall' or area_name_selected is None:
-            # Calculate overall trend
-            overall_danger_trend_df_chart8 = filtered_df_date_range.groupby(pd.Grouper(key='date', freq='M'))["danger_ratio"].mean().reset_index()
-            chart8_title = f"📊 Overall Average Danger Ratio Trend ({start_date} to {end_date})" # Dynamic Title
-            print(f"Chart 8: Calculating overall danger ratio trend. Shape: {overall_danger_trend_df_chart8.shape}")
+        df_h = filtered_df_date_range.copy()
+        df_h["month"] = df_h["date"].dt.to_period("M").dt.to_timestamp()
+
+        heatmap_df_agg = (
+            df_h.groupby(["precinct_area", "month"], as_index=False)["danger_ratio"]
+            .mean()
+            .rename(columns={"danger_ratio": "avg_danger_ratio"})
+        )
+
+        if not heatmap_df_agg.empty:
+            # Keep top N areas to avoid unreadable axis
+            topN = 25
+            top_areas = (
+                heatmap_df_agg.groupby("precinct_area", as_index=False)["avg_danger_ratio"]
+                .mean()
+                .sort_values("avg_danger_ratio", ascending=False)
+                .head(topN)["precinct_area"]
+            )
+            heatmap_df_agg = heatmap_df_agg[heatmap_df_agg["precinct_area"].isin(top_areas)]
+
+            pivot = heatmap_df_agg.pivot(index="precinct_area", columns="month", values="avg_danger_ratio")
+
+            heat_danger = px.imshow(
+                pivot,
+                aspect="auto",
+                color_continuous_scale="Reds",
+                labels=dict(x="Month", y="Precinct Area", color="Avg Danger Ratio"),
+                title=f"Top {topN} Danger Ratio by Precinct and Month ({start_date} to {end_date})",
+                template="plotly_white"
+            )
+
+            heat_danger.update_layout(
+                width=700,
+                height=400,
+                margin=dict(l=180, r=40, t=60, b=60),
+                xaxis=dict(tickformat="%Y-%m")
+            )
         else:
-            # Filter by area and calculate trend
-            df_area_filtered_chart8 = filtered_df_date_range[filtered_df_date_range['areaName'] == area_name_selected].copy() # Use copy to avoid SettingWithCopyWarning
-            print(f"Chart 8: Filtering danger ratio trend by area '{area_name_selected}'. Shape: {df_area_filtered_chart8.shape}")
-            if not df_area_filtered_chart8.empty:
-                 overall_danger_trend_df_chart8 = df_area_filtered_chart8.groupby(pd.Grouper(key='date', freq='M'))["danger_ratio"].mean().reset_index()
-                 chart8_title = f"📊 Average Danger Ratio Trend for {area_name_selected} ({start_date} to {end_date})" # Dynamic Title
-                 print(f"Chart 8: Grouped danger ratio trend for '{area_name_selected}'. Shape: {overall_danger_trend_df_chart8.shape}")
-            else:
-                 overall_danger_trend_df_chart8 = pd.DataFrame() # Empty if no data for the area
-                 chart8_title = f"📊 No Danger Ratio Trend data for {area_name_selected} ({start_date} to {end_date})" # Dynamic Title
-                 print(f"Chart 8: No data after filtering for area '{area_name_selected}'.")
-
-
-        if not overall_danger_trend_df_chart8.empty: # Check if grouped data is also not empty
-            # Use px.line for time series plot
-            overall_danger_trend_figure = px.line(overall_danger_trend_df_chart8, x="date", y="danger_ratio", title=chart8_title, # Use dynamic title
-                                 labels={"date": "Date", "danger_ratio": "Average Danger Ratio"},
-                                 template="plotly_white"
-                                 ).update_layout(margin={"t":40})
-        else:
-            print("Chart 8: overall_danger_trend_df_chart8 is empty, returning empty plot.")
-            overall_danger_trend_figure = px.scatter(title=chart8_title, template="plotly_white") # Use dynamic title
-
+            heat_danger = px.scatter(
+                title=f"No aggregated data for Heatmap ({start_date} to {end_date})",
+                template="plotly_white"
+            )
     else:
-         print("Chart 8: filtered_df_date_range is empty for danger ratio trend source, returning empty plot.")
-         overall_danger_trend_figure = px.scatter(title=f"📊 No data for Danger Ratio Trend ({start_date} to {end_date})", template="plotly_white") # Fallback static title
-    # --- End of Chart 8 (ORIGINAL) ---
+        heat_danger = px.scatter(
+            title=f"No data for Heatmap ({start_date} to {end_date})",
+            template="plotly_white"
+        )
 
 
-    # Chart 9: Choropleth: Latest Median Rent by ZIP Code - Filtered by Date Range (uses data across all categories)
+    # Chart 6: Bar Plot — Average Danger Ratio by Precinct Area (Date Range)
     if not filtered_df_date_range.empty:
-        # Explode ZIP Codes to have one row per ZIP code
+        bar_danger_area_df = (
+            filtered_df_date_range
+            .groupby("precinct_area", as_index=False)["danger_ratio"]
+            .mean()
+            .sort_values("danger_ratio", ascending=False)
+            .head(20)  # Top 20 for readability
+        )
+
+        if not bar_danger_area_df.empty:
+            bar_danger_area = px.bar(
+                bar_danger_area_df,
+                x="danger_ratio",
+                y="precinct_area",
+                orientation="h",
+                title=f"Top 20 Precinct by Average Danger Ratio ({start_date} to {end_date})",
+                labels={"precinct_area": "Precinct Area", "danger_ratio": "Average Danger Ratio"},
+                template="plotly_white"
+            )
+
+            bar_danger_area.update_traces(
+                hovertemplate="Area: %{y}<br>Avg Danger Ratio: %{x:.3f}<extra></extra>"
+            )
+
+            bar_danger_area.update_layout(
+                width=700,
+                height=400,
+                margin=dict(l=180, r=40, t=60, b=50),
+                yaxis=dict(categoryorder="total ascending")
+            )
+        else:
+            bar_danger_area = px.scatter(
+                title=f"No Danger Ratio data by Area ({start_date} to {end_date})",
+                template="plotly_white"
+            )
+    else:
+        bar_danger_area = px.scatter(
+            title=f"No Danger Ratio data by Area ({start_date} to {end_date})",
+            template="plotly_white"
+        )
+
+    # --- Chart 7: Median Rent Trend (Overall or by Area) ---
+    if not filtered_df_date_range.empty:
+        if area_name_selected in ("Overall", None):
+            df7 = filtered_df_date_range
+            chart7_title = f"Median Rent Trend (Overall) ({start_date} to {end_date})"
+        else:
+            df7 = filtered_df_date_range[filtered_df_date_range["areaName"] == area_name_selected].copy()
+            chart7_title = f"Median Rent Trend ({area_name_selected}) ({start_date} to {end_date})"
+
+        rent_trend_df_chart7 = (
+            df7.groupby(pd.Grouper(key="date", freq="ME"))["median_rent"]
+            .median()
+            .reset_index()
+        )
+
+        if not rent_trend_df_chart7.empty:
+            rent_trend_figure = px.line(
+                rent_trend_df_chart7,
+                x="date",
+                y="median_rent",
+                title=chart7_title,
+                labels={"date": "Date", "median_rent": "Median Rent (USD)"},
+                template="plotly_white",
+            )
+            rent_trend_figure.update_traces(
+                line=dict(width=2),
+                hovertemplate="Month: %{x|%b %Y}<br>Median Rent: $%{y:,.0f}<extra></extra>"
+            )
+            rent_trend_figure.update_layout(margin={"l": 100, "r": 40, "t": 60, "b": 50})
+            rent_trend_figure.update_yaxes(tickprefix="$")
+        else:
+            rent_trend_figure = px.scatter(title=f"No rent data ({start_date} to {end_date})", template="plotly_white")
+    else:
+        rent_trend_figure = px.scatter(title=f"No data for rent trend ({start_date} to {end_date})", template="plotly_white")
+
+
+    # --- Chart 8: Average Danger Ratio Trend (Overall or by Area) ---
+    if not filtered_df_date_range.empty:
+        if area_name_selected in ("Overall", None):
+            df8 = filtered_df_date_range
+            chart8_title = f"Average Danger Ratio Trend (Overall) ({start_date} to {end_date})"
+        else:
+            df8 = filtered_df_date_range[filtered_df_date_range["areaName"] == area_name_selected].copy()
+            chart8_title = f"Average Danger Ratio Trend ({area_name_selected}) ({start_date} to {end_date})"
+
+        danger_trend_df_chart8 = (
+            df8.groupby(pd.Grouper(key="date", freq="ME"))["danger_ratio"]
+            .mean()
+            .reset_index()
+        )
+
+        if not danger_trend_df_chart8.empty:
+            overall_danger_trend_figure = px.line(
+                danger_trend_df_chart8,
+                x="date",
+                y="danger_ratio",
+                title=chart8_title,
+                labels={"date": "Date", "danger_ratio": "Average Danger Ratio"},
+                template="plotly_white",
+            )
+            overall_danger_trend_figure.update_traces(
+                line=dict(width=2),
+                hovertemplate="Month: %{x|%b %Y}<br>Avg Danger Ratio: %{y:.3f}<extra></extra>"
+            )
+            overall_danger_trend_figure.update_layout(margin={"l": 90, "r": 40, "t": 60, "b": 50})
+        else:
+            overall_danger_trend_figure = px.scatter(title=f"No danger ratio data ({start_date} to {end_date})", template="plotly_white")
+    else:
+        overall_danger_trend_figure = px.scatter(title=f"No data for danger ratio trend ({start_date} to {end_date})", template="plotly_white")
+
+
+    # Chart 9: Choropleth: Latest Median Rent by ZIP Code - Filtered by Date Range
+    if not filtered_df_date_range.empty:
         filtered_df_exploded = filtered_df_date_range.explode("ZIP Codes").copy()
-        # Ensure ZIP Codes are strings and drop rows with empty ZIP Codes after explode
-        filtered_df_exploded["ZIP Codes"] = filtered_df_exploded["ZIP Codes"].astype(str)
-        filtered_df_exploded = filtered_df_exploded[filtered_df_exploded["ZIP Codes"] != ''].copy()
 
-        print(f"Shape after exploding ZIP Codes: {filtered_df_exploded.shape}")
-        # print(filtered_df_exploded.head())
+        # Clean ZIP
+        filtered_df_exploded = filtered_df_exploded.dropna(subset=["ZIP Codes", "date", "median_rent"]).copy()
+        filtered_df_exploded["ZIP Codes"] = (
+            filtered_df_exploded["ZIP Codes"]
+            .astype(str)
+            .str.extract(r"(\d+)")[0]
+            .str.zfill(5)
+        )
+        filtered_df_exploded = filtered_df_exploded[filtered_df_exploded["ZIP Codes"].notna()].copy()
 
-        # Get the latest rent for each unique ZIP code *within the selected date range*
+        # Latest rent per ZIP within date range (robust)
         if not filtered_df_exploded.empty:
-             latest_rent_by_zip_agg = filtered_df_exploded.sort_values("date", ascending=False).groupby("ZIP Codes").first().reset_index()
+            idx = filtered_df_exploded.groupby("ZIP Codes")["date"].idxmax()
+            latest_rent_by_zip_agg = filtered_df_exploded.loc[idx, ["ZIP Codes", "date", "median_rent"]]
         else:
-             latest_rent_by_zip_agg = pd.DataFrame({"ZIP Codes": [], "median_rent": []}) # Empty df if no data after explode/filter
+            latest_rent_by_zip_agg = pd.DataFrame({"ZIP Codes": [], "date": [], "median_rent": []})
 
         geojson_data_url = "https://raw.githubusercontent.com/OpenDataDE/State-zip-code-GeoJSON/master/ny_new_york_zip_codes_geo.min.json"
 
-        choropleth_rent = px.choropleth_mapbox(
+        choropleth_rent = px.choropleth_map(
             latest_rent_by_zip_agg,
             geojson=geojson_data_url,
             locations="ZIP Codes",
             featureidkey="properties.ZCTA5CE10",
             color="median_rent",
-            mapbox_style="carto-positron",
-            center={"lat": 40.73, "lon": -73.94},
-            zoom=10, title=f"🗺️ Latest Median Rent by ZIP Code ({start_date} to {end_date})",
             color_continuous_scale="Blues",
-            labels={"median_rent": "Median Rent ($)", "ZIP Codes": "ZIP Code"},
-            hover_data={"ZIP Codes": True, "median_rent": ":$,.0f"},
+            center={"lat": 40.73, "lon": -73.94},
+            zoom=10,
+            title=f"Latest Median Rent by ZIP Code ({start_date} to {end_date})",
+            labels={"median_rent": "Median Rent (USD)", "ZIP Codes": "ZIP Code"},
             template="plotly_white"
         )
-        choropleth_rent.update_layout(margin={"r":0,"l":0,"b":0,"t":40})
+
+        choropleth_rent.update_traces(
+            hovertemplate="ZIP: %{location}<br>Median Rent: $%{z:,.0f}<extra></extra>"
+        )
+
+        choropleth_rent.update_layout(margin={"r": 0, "l": 0, "b": 0, "t": 40})
+
     else:
-         choropleth_rent = px.scatter(title=f"🗺️ No data for Choropleth ({start_date} to {end_date})", template="plotly_white")
+        choropleth_rent = px.scatter(
+            title=f"No data for Choropleth ({start_date} to {end_date})",
+            template="plotly_white"
+        )
 
-
-    # Return the generated figures - Ensure the order matches the Output definition
-    # Output order: Chart 1, 2, 3, 4, 5, 6, 7 (Rent Trend), 8 (Danger Ratio Trend), 9 (Choropleth)
+    # Output order: Chart 1, 2, 3, 4, 5, 6, 7, 8, 9
     return (
-        line_crime_trend,        # Chart 1
-        bar_crime_area,          # Chart 2
-        scatter_crime_rent,      # Chart 3
-        box_rent,                # Chart 4
-        heat_danger,             # Chart 5
-        bar_danger_area,         # Chart 6
-        rent_trend_figure,       # Chart 7 (MODIFIED: Rent Trend)
-        overall_danger_trend_figure, # Chart 8 (ORIGINAL: Danger Ratio Trend)
-        choropleth_rent          # Chart 9
+        line_crime_trend,      
+        bar_crime_area,         
+        scatter_crime_rent,      
+        box_rent,               
+        heat_danger,          
+        bar_danger_area,        
+        rent_trend_figure,      
+        overall_danger_trend_figure, 
+        choropleth_rent          
     )
 
 
 # === Run App ===
 if __name__ == "__main__":
-    # Create assets folder if it doesn't exist (optional, good for first run)
+    # Create assets folder if it doesn't exist 
     assets_folder = os.path.join(os.path.dirname(__file__), "assets")
     if not os.path.exists(assets_folder):
         os.makedirs(assets_folder)
