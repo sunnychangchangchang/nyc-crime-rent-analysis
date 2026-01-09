@@ -26,8 +26,9 @@ This project analyzes the relationship between **housing affordability and crime
 
 > The GIF below demonstrates real-time interaction, filtering, and map exploration.
 
-![Dashboard Demo](assets/screenshots/dashboard_demo.gif)
-
+<p align="center">
+  <img src="assets/screenshots/dashboard_demo.gif" width="900" />
+</p>
 
 
 ## ✨ Key Features
@@ -74,13 +75,20 @@ a normalized comparison of safety versus housing cost across NYC areas.
 ## 🖼️ Selected Screenshots
 
 **EDA Dashboard (Overview)**  
-![EDA Dashboard](assets/screenshots/dashboard_overview.png)
+<p align="center">
+  <img src="assets/screenshots/dashboard_overview.png" width="900">
+</p>
 
 **Map Explorer**  
-![Choropleth](assets/screenshots/map_explorer.png)
+<p align="center">
+  <img src="assets/screenshots/map_explorer.png" width="900">
+</p>
 
 **Danger Ratio Heatmap**  
-![Heatmap](assets/screenshots/danger_ratio_heatmap.png)
+<p align="center">
+  <img src="assets/screenshots/danger_ratio_heatmap.png" width="900">
+</p>
+
 
 
 
@@ -114,8 +122,6 @@ a normalized comparison of safety versus housing cost across NYC areas.
 │       ├── dashboard_overview.png
 │       ├── map_explorer.png
 │       └── danger_ratio_heatmap.png
-
-
 ```
 
 
