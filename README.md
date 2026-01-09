@@ -26,10 +26,7 @@ This project analyzes the relationship between **housing affordability and crime
 
 > The GIF below demonstrates real-time interaction, filtering, and map exploration.
 
-<p align="center">
-  <img src="assets/screenshots/dashboard_demo.gif" width="900" />
-</p>
-
+![Dashboard Demo](https://raw.githubusercontent.com/sunnychangchangchang/nyc-crime-rent-analysis/master/assets/screenshots/dashboard_demo.gif)
 
 ## ✨ Key Features
 
