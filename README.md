@@ -104,9 +104,7 @@ a normalized comparison of safety versus housing cost across NYC areas.
 
 ## 📄 Report
 
-A full written analysis is available here:
-
-[NYC_Rent_Crime_Analysis_Report (PDF)](assets/Sunny_Chang_Final_Report_FRE6191.pdf)
+A full written analysis is available here: [NYC_Rent_Crime_Analysis_Report (PDF)](assets/Sunny_Chang_Final_Report_FRE6191.pdf)
 
 
 
