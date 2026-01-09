@@ -6,7 +6,7 @@ This project analyzes the relationship between **housing affordability and crime
 
 
 
-## Project Overview
+## 📌 Project Overview
 
 - **Objective:**  
   Examine how crime severity relates to median rent levels across NYC neighborhoods, precincts, and ZIP codes.
@@ -22,15 +22,15 @@ This project analyzes the relationship between **housing affordability and crime
 
 
 
-## Dashboard Demo
+## 🎥 Dashboard Demo
 
 > The GIF below demonstrates real-time interaction, filtering, and map exploration.
 
-![Dashboard Demo](screenshots/dashboard_demo.gif)
+![Dashboard Demo](assets/screenshots/dashboard_demo.gif)
 
 
 
-## Key Features
+## ✨ Key Features
 
 ### 1. Interactive EDA Dashboard
 - Dynamic filtering by:
@@ -73,7 +73,7 @@ This metric highlights areas where crime intensity is high relative to housing c
 
 ---
 
-## Selected Screenshots
+## 🖼️ Selected Screenshots
 
 **EDA Dashboard (Overview)**  
 ![EDA Dashboard](assets/screenshots/dashboard_overview.png)
@@ -142,7 +142,7 @@ The two projects use the **same dataset and research question**, but differ in:
 
 
 
-## 👤 Author
+## Author
 
 **Sunny Chang**  
 Data Science | Analytics | Visualization  
