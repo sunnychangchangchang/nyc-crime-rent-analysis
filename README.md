@@ -55,23 +55,21 @@ This project analyzes the relationship between **housing affordability and crime
 
 
 ## Methodology
-
 ### Danger Ratio (Core Metric)
 
-To normalize crime by cost of living, a **Danger Ratio** is defined as:
+To normalize crime intensity by cost of living, a **Danger Ratio** is defined as:
 
-\[
-\text{Danger Ratio} = \frac{\text{Weighted Crime Count}}{\text{Median Rent}}
-\]
+**Danger Ratio = Weighted Crime Count / Median Rent**
 
 **Crime Severity Weights**
 - Felony: 3  
 - Misdemeanor: 2  
 - Violation: 1  
 
-This metric highlights areas where crime intensity is high relative to housing cost.
+This metric captures relative crime exposure per dollar of rent, enabling
+a normalized comparison of safety versus housing cost across NYC areas.
 
----
+
 
 ## 🖼️ Selected Screenshots
 
@@ -125,7 +123,7 @@ This metric highlights areas where crime intensity is high relative to housing c
 
 A full written analysis is available here:
 
-📎 **[NYC_Rent_Crime_Analysis_Report (PDF)](assets/Sunny_Chang_Final_Report_FRE6191.pdf)**
+[NYC_Rent_Crime_Analysis_Report (PDF)](assets/Sunny_Chang_Final_Report_FRE6191.pdf)
 
 
 
@@ -134,7 +132,7 @@ A full written analysis is available here:
 This project has a complementary visualization-focused implementation using **D3.js**:
 
 - **NYC Rent & Crime Analysis (D3 / Observable)**  
-  👉 [Link to Observable notebook](https://observablehq.com/@nyuinfovis/nye-crime-rent-analysis)
+  [Link to Observable notebook](https://observablehq.com/@nyuinfovis/nye-crime-rent-analysis)
 
 The two projects use the **same dataset and research question**, but differ in:
 - **This repo:** Data science workflow, analytics, dashboard engineering  
