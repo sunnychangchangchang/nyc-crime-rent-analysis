@@ -139,6 +139,24 @@ The two projects use the **same dataset and research question**, but differ in:
 - **Observable project:** Custom visual encoding and front-end visualization design
 
 
+## 🚀 Running the Dashboard Locally
+
+To run the interactive dashboard on your local machine:
+
+```bash
+git clone https://github.com/your-username/nyc-rent-crime-analysis.git
+cd nyc-rent-crime-analysis
+pip install -r requirements.txt
+python app.py
+```
+
+Then open your browser at:
+```text
+http://localhost:8054
+```
+
+> Note: Google Maps functionality requires a valid API key with Geocoding, Places, and Distance Matrix APIs enabled.
+
 
 ## Author
 
