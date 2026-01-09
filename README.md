@@ -69,26 +69,6 @@ a normalized comparison of safety versus housing cost across NYC areas.
 
 
 
-## 🖼️ Selected Screenshots
-
-**EDA Dashboard (Overview)**  
-<p align="center">
-  <img src="assets/screenshots/dashboard_overview.png" width="900">
-</p>
-
-**Map Explorer**  
-<p align="center">
-  <img src="assets/screenshots/map_explorer.png" width="900">
-</p>
-
-**Danger Ratio Heatmap**  
-<p align="center">
-  <img src="assets/screenshots/danger_ratio_heatmap.png" width="900">
-</p>
-
-
-
-
 ## 🛠️ Tech Stack
 
 **Languages & Libraries**
