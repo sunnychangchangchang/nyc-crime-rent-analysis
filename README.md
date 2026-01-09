@@ -2,12 +2,11 @@
 
 **Interactive Data Science Project | Python, Dash, Plotly, Pandas**
 
-This project analyzes the relationship between **housing affordability and crime patterns in New York City** from 2015 to recent data.  
-It combines exploratory data analysis, geospatial visualization, and an interactive dashboard to support data-driven urban insights.
+This project analyzes the relationship between **housing affordability and crime patterns in New York City** from 2015 to 2024.  It combines exploratory data analysis, geospatial visualization, and an interactive dashboard to support data-driven urban insights.
 
 
 
-## 📌 Project Overview
+## Project Overview
 
 - **Objective:**  
   Examine how crime severity relates to median rent levels across NYC neighborhoods, precincts, and ZIP codes.
@@ -23,7 +22,7 @@ It combines exploratory data analysis, geospatial visualization, and an interact
 
 
 
-## 🎥 Dashboard Demo
+## Dashboard Demo
 
 > The GIF below demonstrates real-time interaction, filtering, and map exploration.
 
@@ -31,7 +30,7 @@ It combines exploratory data analysis, geospatial visualization, and an interact
 
 
 
-## 📊 Key Features
+## Key Features
 
 ### 1. Interactive EDA Dashboard
 - Dynamic filtering by:
@@ -55,7 +54,7 @@ It combines exploratory data analysis, geospatial visualization, and an interact
 
 
 
-## 🧮 Methodology
+## Methodology
 
 ### Danger Ratio (Core Metric)
 
@@ -74,16 +73,16 @@ This metric highlights areas where crime intensity is high relative to housing c
 
 ---
 
-## 🖼️ Selected Screenshots
+## Selected Screenshots
 
 **EDA Dashboard (Overview)**  
-![EDA Dashboard](screenshots/dashboard_overview.png)
+![EDA Dashboard](assets/screenshots/dashboard_overview.png)
 
 **Map Explorer**  
-![Choropleth](screenshots/map_explorer.png)
+![Choropleth](assets/screenshots/map_explorer.png)
 
 **Danger Ratio Heatmap**  
-![Heatmap](screenshots/danger_ratio_heatmap.png)
+![Heatmap](assets/screenshots/danger_ratio_heatmap.png)
 
 
 
@@ -126,7 +125,7 @@ This metric highlights areas where crime intensity is high relative to housing c
 
 A full written analysis is available here:
 
-📎 **[Final Report (PDF)](assets/Sunny_Chang_Final_Report_FRE6191.pdf)**
+📎 **[NYC_Rent_Crime_Analysis_Report (PDF)](assets/Sunny_Chang_Final_Report_FRE6191.pdf)**
 
 
 
@@ -135,7 +134,7 @@ A full written analysis is available here:
 This project has a complementary visualization-focused implementation using **D3.js**:
 
 - **NYC Rent & Crime Analysis (D3 / Observable)**  
-  👉 *Link to Observable notebook or GitHub repo*
+  👉 [Link to Observable notebook](https://observablehq.com/@nyuinfovis/nye-crime-rent-analysis)
 
 The two projects use the **same dataset and research question**, but differ in:
 - **This repo:** Data science workflow, analytics, dashboard engineering  
