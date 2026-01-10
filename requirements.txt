@@ -1,7 +1,8 @@
 dash
 dash-bootstrap-components
 dash-leaflet
-plotly
+plotly>=6.1.1
+kaleido>=1.2.0
 pandas
 requests
 python-dateutil
